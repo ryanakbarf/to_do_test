@@ -521,7 +521,10 @@ class _HomeBodyState extends State<HomeBody> {
                                                       trailingIcon: CupertinoIcons
                                                           .chevron_down_square,
                                                       child: const Text(
-                                                          'Priority DOWN'),
+                                                        'Priority DOWN',
+                                                        style: TextStyle(
+                                                            fontSize: 15),
+                                                      ),
                                                     ),
                                                   CupertinoContextMenuAction(
                                                     onPressed: () {
