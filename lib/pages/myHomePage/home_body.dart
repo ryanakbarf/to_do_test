@@ -621,8 +621,13 @@ class _HomeBodyState extends State<HomeBody> {
                                                                           .pic)]
                                                               : Colors.grey,
                                                         ),
-                                                        Text(taskList[index2]
-                                                            .pic),
+                                                        Text(
+                                                          taskList[index2].pic,
+                                                          style: TextStyle(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .shadowColor),
+                                                        ),
                                                       ],
                                                     ),
                                                     title: RichText(
@@ -703,7 +708,11 @@ class _HomeBodyState extends State<HomeBody> {
                                                       ),
                                                     ),
                                                     subtitle: Text(
-                                                        taskList[index2].desc),
+                                                        taskList[index2].desc,
+                                                        style: TextStyle(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .shadowColor)),
                                                     trailing: Column(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
