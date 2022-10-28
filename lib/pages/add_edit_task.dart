@@ -57,6 +57,14 @@ class _AddEditTaskState extends State<AddEditTask> {
     _textControllerPic = TextEditingController();
 
     _textControllerTitle.text = widget.data.title;
+
+    if (_picNames.isEmpty) {
+      _picNames.add('Me');
+    }
+    if (!_picNames.contains('Add New..')) {
+      _picNames.add('Add New..');
+    }
+
     if (widget.id > -1) {
       _textControllerDesc.text = widget.data.desc;
       _textControllerPic.text = widget.data.pic;
@@ -73,13 +81,6 @@ class _AddEditTaskState extends State<AddEditTask> {
       _textControllerPic.text = _picNames[_pic];
       startDate =
           DateTime(widget.date.year, widget.date.month, widget.date.day);
-    }
-
-    if (_picNames.isEmpty) {
-      _picNames.add('Me');
-    }
-    if (!_picNames.contains('Add New..')) {
-      _picNames.add('Add New..');
     }
 
     super.initState();
