@@ -216,6 +216,7 @@ class _HomeBodyState extends State<HomeBody> {
             if (Globals.firstUse) {
               ShowCaseWidget.of(context).startShowCase([_four]);
             }
+            Globals.firstUse = false;
           }
         });
       }
