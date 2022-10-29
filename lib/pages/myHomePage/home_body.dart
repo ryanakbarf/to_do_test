@@ -60,7 +60,7 @@ class _HomeBodyState extends State<HomeBody> {
     } else {
       taskList.sort((a, b) => (index == 1)
           ? b.priority.compareTo(a.priority)
-          : a.title.compareTo(b.title));
+          : a.title.toLowerCase().compareTo(b.title.toLowerCase()));
     }
   }
 
