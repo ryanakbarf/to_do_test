@@ -11,6 +11,8 @@ import '../../globals.dart';
 // The next idea is to make task's priority can be changed in main page instead of going to edit page. This is achievable by long press to activate Cupertino context options on task's Card.
 // The task's also can be moved to later or earlier date by long press options.
 
+// I added the Person In Charge in the task so User have more information whose task is that for. Even the list of PIC can be updated and grow as long user needed it.
+
 // All the data are stored locally on SQLite. So the fetch and store is SQL compatible.
 
 // Task's Card is equipped with more information after it's name/title, such as how many days its' been overdue, or is it on due date, or is it not been finished for a while. So Users will get more info without needed to open the detail in edit page.

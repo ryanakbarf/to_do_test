@@ -298,6 +298,8 @@ class _AddEditTaskState extends State<AddEditTask> {
                                             ),
                                           ],
                                         ),
+
+                                        // Here is the logic for User to add new PIC if needed
                                         if (_picNames[_pic] == 'Add New..')
                                           Expanded(
                                             child: SizedBox(
