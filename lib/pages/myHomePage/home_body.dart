@@ -194,7 +194,7 @@ class _HomeBodyState extends State<HomeBody> {
     });
   }
 
-  void openAdd(title) {
+  void openAdd() {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -203,7 +203,7 @@ class _HomeBodyState extends State<HomeBody> {
                 date: currentDate,
                 data: TaskModel(
                     id: -1,
-                    title: title,
+                    title: '',
                     desc: '',
                     pic: '',
                     start: '',
@@ -222,10 +222,8 @@ class _HomeBodyState extends State<HomeBody> {
         taskList = await tasks(0);
         picList = await getPic();
         setState(() {
-          if (title == "New Task") {
-            if (Globals.firstUse) {
-              ShowCaseWidget.of(context).startShowCase([_four]);
-            }
+          if (Globals.firstUse) {
+            ShowCaseWidget.of(context).startShowCase([_four]);
             Globals.firstUse = false;
           }
           Globals.showAlertDialog(context, 'Task\'s inserted successfully!');
@@ -805,9 +803,9 @@ class _HomeBodyState extends State<HomeBody> {
                         title: 'Add New Task',
                         description: 'Click here to add new task',
                         disposeOnTap: true,
-                        onTargetClick: () => openAdd('New Task'),
+                        onTargetClick: () => openAdd(),
                         child: CupertinoButton.filled(
-                          onPressed: () => openAdd(''),
+                          onPressed: () => openAdd(),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: const [

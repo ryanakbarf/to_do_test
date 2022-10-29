@@ -55,7 +55,8 @@ class _AddEditTaskState extends State<AddEditTask> {
     _textControllerDesc = TextEditingController();
     _textControllerPic = TextEditingController();
 
-    _textControllerTitle.text = widget.data.title;
+    _textControllerTitle.text =
+        Globals.firstUse ? "New Task" : widget.data.title;
 
     if (_picNames.isEmpty) {
       _picNames.add('Me');
