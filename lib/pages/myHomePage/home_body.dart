@@ -27,7 +27,6 @@ class _HomeBodyState extends State<HomeBody> {
   final GlobalKey _two = GlobalKey();
   final GlobalKey _three = GlobalKey();
   final GlobalKey _four = GlobalKey();
-  final GlobalKey _five = GlobalKey();
   bool pageChanging = false;
 
   final DateTime now = DateTime.now();
@@ -111,7 +110,7 @@ class _HomeBodyState extends State<HomeBody> {
   void _initDB() async {
     bool response = await Globals.initDB();
     if (response && taskList.isEmpty) {
-      taskList = await tasks();
+      taskList = await tasks(0);
       picList = await getPic();
       setState(() {
         if (Globals.firstUse) {
@@ -121,13 +120,19 @@ class _HomeBodyState extends State<HomeBody> {
     }
   }
 
-  Future<List<TaskModel>> tasks() async {
+  Future<List<TaskModel>> tasks(int diffDate) async {
     sortIndex = 0;
+    DateTime newDate = currentDate.add(Duration(days: diffDate));
+    String dateBefore =
+        Globals.formatter.format(newDate.add(const Duration(days: -2)));
+    String dateAfter =
+        Globals.formatter.format(newDate.add(const Duration(days: 2)));
 
     final db = await Globals.database;
 
     String query =
-        "SELECT * FROM tasks where start >= '${dateNavigation()[0]}' and start <= '${dateNavigation()[4]}' or (start < '${formatter.format(currentDate)}' and end is null) order by due, start, priority desc, title";
+        "SELECT * FROM tasks where (start >= '$dateBefore' and start <= '$dateAfter') or (end >= '$dateBefore' and end <= '$dateAfter') or (start < '$dateAfter' and end is null) order by due, start, priority desc, title";
+    print(query);
 
     final List<Map<String, dynamic>> maps = await db.rawQuery(query);
 
@@ -173,15 +178,15 @@ class _HomeBodyState extends State<HomeBody> {
   // Each time user swipe the page, App reset the new page to be the 3rd page
   void changeDate(int diffDate) async {
     pageChanging = true;
+    taskList = await tasks(diffDate);
     _pageControllerDate.animateToPage(_currentIndex + diffDate,
         duration: const Duration(milliseconds: 190), curve: Curves.ease);
-    Future.delayed(const Duration(milliseconds: 200), () {
+    Future.delayed(const Duration(milliseconds: 200), () async {
       _pageControllerDate.jumpToPage(2);
       _pageControllerPage.jumpToPage(2);
       currentDate = currentDate.add(Duration(days: diffDate));
       setState(() {});
     });
-    taskList = await tasks();
     Future.delayed(const Duration(milliseconds: 400), () {
       pageChanging = false;
     });
@@ -206,18 +211,18 @@ class _HomeBodyState extends State<HomeBody> {
                 picNames: picList,
               )),
     ).then((value) async {
-      _newTaskId = value;
+      if (Globals.firstUse) _newTaskId = value;
       if (value != null) {
-        taskList = await tasks();
+        taskList = await tasks(0);
         picList = await getPic();
         setState(() {
-          Globals.showAlertDialog(context, 'Task\'s inserted successfully!');
           if (title == "New Task") {
             if (Globals.firstUse) {
               ShowCaseWidget.of(context).startShowCase([_four]);
             }
             Globals.firstUse = false;
           }
+          Globals.showAlertDialog(context, 'Task\'s inserted successfully!');
         });
       }
     });
@@ -386,8 +391,8 @@ class _HomeBodyState extends State<HomeBody> {
                                                       .isEmpty) ||
                                               diffEndCur == 0) {
                                             return Showcase(
-                                              key: taskList[index2].id ==
-                                                      _newTaskId
+                                              key: (taskList[index2].id ==
+                                                      _newTaskId)
                                                   ? _four
                                                   : GlobalKey(),
                                               title: 'Task Item',
@@ -405,7 +410,7 @@ class _HomeBodyState extends State<HomeBody> {
                                                                 "id=${taskList[index2].id}");
                                                         if (resp > 0) {
                                                           taskList =
-                                                              await tasks();
+                                                              await tasks(0);
                                                           setState(() {
                                                             Navigator.pop(
                                                                 context);
@@ -445,7 +450,7 @@ class _HomeBodyState extends State<HomeBody> {
                                                                 "id=${taskList[index2].id}");
                                                         if (resp > 0) {
                                                           taskList =
-                                                              await tasks();
+                                                              await tasks(0);
                                                           setState(() {
                                                             Navigator.pop(
                                                                 context);
@@ -479,7 +484,7 @@ class _HomeBodyState extends State<HomeBody> {
                                                                 "id=${taskList[index2].id}");
                                                         if (resp > 0) {
                                                           taskList =
-                                                              await tasks();
+                                                              await tasks(0);
                                                           setState(() {
                                                             Navigator.pop(
                                                                 context);
@@ -508,7 +513,7 @@ class _HomeBodyState extends State<HomeBody> {
                                                                 "id=${taskList[index2].id}");
                                                         if (resp > 0) {
                                                           taskList =
-                                                              await tasks();
+                                                              await tasks(0);
                                                           setState(() {
                                                             Navigator.pop(
                                                                 context);
@@ -548,7 +553,7 @@ class _HomeBodyState extends State<HomeBody> {
                                                       ).then((value) async {
                                                         if (value != null) {
                                                           taskList =
-                                                              await tasks();
+                                                              await tasks(0);
                                                           picList =
                                                               await getPic();
                                                           setState(() {
@@ -572,7 +577,7 @@ class _HomeBodyState extends State<HomeBody> {
                                                                     .id);
                                                         if (resp > 0) {
                                                           taskList =
-                                                              await tasks();
+                                                              await tasks(0);
                                                           setState(() {
                                                             Navigator.pop(
                                                                 context);
@@ -628,6 +633,8 @@ class _HomeBodyState extends State<HomeBody> {
                                                                       context)
                                                                   .shadowColor),
                                                         ),
+                                                        Text(diffCurNow
+                                                            .toString())
                                                       ],
                                                     ),
                                                     title: RichText(
