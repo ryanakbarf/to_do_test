@@ -213,7 +213,11 @@ class _HomeBodyState extends State<HomeBody> {
                 picNames: picList,
               )),
     ).then((value) async {
-      if (Globals.firstUse) _newTaskId = value;
+      if (Globals.firstUse) {
+        _newTaskId = value;
+      } else {
+        _newTaskId = -1;
+      }
       if (value != null) {
         taskList = await tasks(0);
         picList = await getPic();
@@ -228,6 +232,55 @@ class _HomeBodyState extends State<HomeBody> {
         });
       }
     });
+  }
+
+  void changePriority(
+      BuildContext context, String content, TaskModel taskListModel) async {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: const Text('Alert'),
+        content: Text(content),
+        actions: <CupertinoDialogAction>[
+          if (taskListModel.priority > 0)
+            CupertinoDialogAction(
+              onPressed: () async {
+                Navigator.pop(context);
+                int resp = await Globals.updateDB(
+                    'tasks',
+                    "priority=${taskListModel.priority - 1}",
+                    "id=${taskListModel.id}");
+                if (resp > 0) {
+                  taskList = await tasks(0);
+                  setState(() {});
+                }
+              },
+              child: const Icon(
+                CupertinoIcons.arrow_down_circle,
+                color: Colors.green,
+              ),
+            ),
+          if (taskListModel.priority < 2)
+            CupertinoDialogAction(
+              onPressed: () async {
+                Navigator.pop(context);
+                int resp = await Globals.updateDB(
+                    'tasks',
+                    "priority=${taskListModel.priority + 1}",
+                    "id=${taskListModel.id}");
+                if (resp > 0) {
+                  taskList = await tasks(0);
+                  setState(() {});
+                }
+              },
+              child: const Icon(
+                CupertinoIcons.arrow_up_circle,
+                color: Colors.red,
+              ),
+            ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -445,6 +498,7 @@ class _HomeBodyState extends State<HomeBody> {
                                                   if (diffCurNow <= 0)
                                                     CupertinoContextMenuAction(
                                                       onPressed: () async {
+                                                        _newTaskId = -1;
                                                         int resp = await Globals
                                                             .updateDB(
                                                                 'tasks',
@@ -473,65 +527,19 @@ class _HomeBodyState extends State<HomeBody> {
                                                               ? '+1 Day'
                                                               : '-1 Day'),
                                                     ),
-                                                  if (diffCurNow <= 0 &&
-                                                      taskList[index2]
-                                                              .priority <
-                                                          2)
+                                                  if (diffCurNow <= 0)
                                                     CupertinoContextMenuAction(
-                                                      onPressed: () async {
-                                                        int resp = await Globals
-                                                            .updateDB(
-                                                                'tasks',
-                                                                "priority=${taskList[index2].priority + 1}",
-                                                                "id=${taskList[index2].id}");
-                                                        if (resp > 0) {
-                                                          taskList =
-                                                              await tasks(0);
-                                                          setState(() {
-                                                            Navigator.pop(
-                                                                context);
-                                                            Globals.showAlertDialog(
-                                                                context,
-                                                                'Task\'s priority had been ranked up');
-                                                          });
-                                                        }
-                                                      },
-                                                      trailingIcon:
-                                                          CupertinoIcons
-                                                              .chevron_up_square,
-                                                      child: const Text(
-                                                          'Priority UP'),
-                                                    ),
-                                                  if (diffCurNow <= 0 &&
-                                                      taskList[index2]
-                                                              .priority >
-                                                          0)
-                                                    CupertinoContextMenuAction(
-                                                      onPressed: () async {
-                                                        int resp = await Globals
-                                                            .updateDB(
-                                                                'tasks',
-                                                                "priority=${taskList[index2].priority - 1}",
-                                                                "id=${taskList[index2].id}");
-                                                        if (resp > 0) {
-                                                          taskList =
-                                                              await tasks(0);
-                                                          setState(() {
-                                                            Navigator.pop(
-                                                                context);
-                                                            Globals.showAlertDialog(
-                                                                context,
-                                                                'Task\'s priority had been ranked down');
-                                                          });
-                                                        }
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                        changePriority(
+                                                            context,
+                                                            'Change Priority?',
+                                                            taskList[index2]);
                                                       },
                                                       trailingIcon: CupertinoIcons
-                                                          .chevron_down_square,
+                                                          .arrow_up_arrow_down_circle,
                                                       child: const Text(
-                                                        'Priority DOWN',
-                                                        style: TextStyle(
-                                                            fontSize: 15),
-                                                      ),
+                                                          'Priority'),
                                                     ),
                                                   CupertinoContextMenuAction(
                                                     onPressed: () {
@@ -635,8 +643,7 @@ class _HomeBodyState extends State<HomeBody> {
                                                                       context)
                                                                   .shadowColor),
                                                         ),
-                                                        Text(diffCurNow
-                                                            .toString())
+                                                        // Text(diffCurNow.toString())
                                                       ],
                                                     ),
                                                     title: RichText(
